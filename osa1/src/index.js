@@ -1,66 +1,92 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-
-const Otsikko = (props) => {
+const Statistics = (props) => {
     return (
         <div>
-            <p>{props.kurssi.nimi}</p>
+            <h1>Statistiikka</h1>
+            <Statistic nimi="hyvä" arvo={props.hyva}/>
+            <Statistic nimi="neutraali" arvo={props.neutraali}/>
+            <Statistic nimi="huono" arvo={props.huono}/>
         </div>
     )
 }
-const Sisalto = (props) => {
+const Statistic = (props) => {
     return (
         <div>
-            <Osa osa={props.osat[0].nimi} tehtavia={props.osat[0].tehtavia} />
-            <Osa osa={props.osat[1].nimi} tehtavia={props.osat[1].tehtavia} />
-            <Osa osa={props.osat[2].nimi} tehtavia={props.osat[2].tehtavia} />
-        </div>
-    )
-}
-const Osa = (props) => {
-    return (
-        <div>
-            <p>{props.osa} {props.tehtavia}</p>
-        </div>
-    )
-}
-const Yhteensa = (props) => {
-    let yhteensa = props.osat[0].tehtavia + props.osat[1].tehtavia + props.osat[2].tehtavia
-    return (
-        <div>
-            <p>Yhteensä {yhteensa} tehtävää</p>
+            {props.nimi} {props.arvo}
         </div>
     )
 }
 
-const App = () => {
-    const kurssi = {
-        nimi: 'Half Stack -sovelluskehitys',
-        osat: [
-          {
-            nimi: 'Reactin perusteet',
-            tehtavia: 10
-          },
-          {
-            nimi: 'Tiedonvälitys propseilla',
-            tehtavia: 7
-          },
-          {
-            nimi: 'Komponenttien tila',
-            tehtavia: 14
-          }
-        ]
-      }
-
-  return (
-    <div>
-        <Otsikko kurssi={kurssi} />
-        <Sisalto osat={kurssi.osat} />
-        <Yhteensa osat={kurssi.osat} />
-    </div>
+const Button = ({ handleClick, text }) => (
+    <button onClick={handleClick}>
+      {text}
+    </button>
   )
-}
+
+class App extends React.Component {
+    constructor() {
+      super()
+      this.state = {
+        hyva: 0,
+        neutraali: 0,
+        huono: 0
+      }
+    }
+
+    asetaHyvaArvoon = (arvo) => () => this.setState({ hyva: arvo })
+    asetaNeutraaliArvoon = (arvo) => () => this.setState({ neutraali: arvo })
+    asetaHuonoArvoon = (arvo) => () => this.setState({ huono: arvo })
+
+    keskiarvo() {
+        let x = (this.state.hyva * 1 + this.state.neutraali * 0 + this.state.huono * -1) / (this.state.hyva + this.state.huono + this.state.neutraali)
+        let k = x.toFixed(1)
+        if (isNaN(k)) return 0
+        return k
+    }
+    positiivisia() {
+        let k = this.state.hyva + this.state.neutraali + this.state.huono
+        let t = this.state.hyva / k * 100
+        if (isNaN(t)) return 0 + " %"
+        return t.toFixed(0) + " %";
+    }
+    palautteita() {
+        let k = this.state.hyva + this.state.neutraali + this.state.huono
+        if (isNaN(k) || k === 0) return false
+        return true
+    }
+
+    render() {
+    if (this.palautteita() === false) {
+        return (
+        <div>
+          <h1>Anna palautetta</h1>
+          <div>
+            <Button handleClick={this.asetaHyvaArvoon(this.state.hyva + 1) } text="Hyvä" />
+            <Button handleClick={this.asetaNeutraaliArvoon(this.state.neutraali + 1) } text="Neutraali" />
+            <Button handleClick={this.asetaHuonoArvoon(this.state.huono + 1) } text="Huono" />
+            <h1>statistiikka</h1>
+            <p>Ei yhtään palautetta annettu</p>
+          </div>
+        </div>
+        )
+    }
+      return (
+        <div>
+          <h1>Anna palautetta</h1>
+          <div>
+            <Button handleClick={this.asetaHyvaArvoon(this.state.hyva + 1) } text="Hyvä" />
+            <Button handleClick={this.asetaNeutraaliArvoon(this.state.neutraali + 1) } text="Neutraali" />
+            <Button handleClick={this.asetaHuonoArvoon(this.state.huono + 1) } text="Huono" />
+            <Statistics hyva={this.state.hyva} neutraali={this.state.neutraali} huono={this.state.huono}/>
+            <Statistic nimi="Keskiarvo" arvo={this.keskiarvo()} />
+            <Statistic nimi="Positiivisia" arvo={this.positiivisia()} />
+          </div>
+        </div>
+      )
+    }
+  }
 
 ReactDOM.render(
   <App />,
