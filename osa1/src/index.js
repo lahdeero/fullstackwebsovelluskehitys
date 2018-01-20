@@ -1,96 +1,80 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const Statistics = (props) => {
-    return (
-        <table>
-        <tbody>
-        <tr>
-        <td colSpan="2"><h1>Statistiikka</h1></td>
-        </tr>
-            <Statistic nimi="hyvä" arvo={props.hyva}/>
-            <Statistic nimi="neutraali" arvo={props.neutraali}/>
-            <Statistic nimi="huono" arvo={props.huono}/>
-            <Statistic nimi="Keskiarvo" arvo={props.keskiarvo} />
-            <Statistic nimi="Positiivisia" arvo={props.positiivisia} />
-        </tbody>
-        </table>
-    )
-}
-const Statistic = (props) => {
-    return (
-        <tr>
-        <td> {props.nimi} </td>
-        <td> {props.arvo} </td>
-        </tr>
-    )
-}
-
-const Button = ({ handleClick, text }) => (
-    <button onClick={handleClick}>
-      {text}
-    </button>
-  )
-
-class App extends React.Component {
-    constructor() {
-      super()
-      this.state = {
-        hyva: 0,
-        neutraali: 0,
-        huono: 0
-      }
-    }
-
-    asetaArvoon(apu, arvo) {
-        let newState = {}
-        newState[apu] = arvo
-        return () => this.setState(newState)
-    }
-
-    keskiarvo() {
-        let x = (this.state.hyva * 1 + this.state.neutraali * 0 + this.state.huono * -1) / (this.state.hyva + this.state.huono + this.state.neutraali)
-        let k = x.toFixed(1)
-        if (isNaN(k)) return 0
-        return k
-    }
-    positiivisia() {
-        let k = this.state.hyva + this.state.neutraali + this.state.huono
-        let t = this.state.hyva / k * 100
-        if (isNaN(t)) return 0 + " %"
-        return t.toFixed(0) + " %";
-    }
-    palautteita() {
-        let k = this.state.hyva + this.state.neutraali + this.state.huono
-        if (isNaN(k) || k === 0) return false
-        return true
-    }
-    doStats() {
+const MostVoted = (props) => {
+    let i = 0
+    let isoinluku = 0
+    let isoimmanindeksi = 0
+    props.votes.forEach((luku) => {
+        if (luku > isoinluku) {
+            isoinluku = luku
+            isoimmanindeksi = i
+        }
+        i++
+    })
+    if (isoinluku === 0) {
         return (
             <div>
-            <Statistics hyva={this.state.hyva} neutraali={this.state.neutraali} huono={this.state.huono} 
-            keskiarvo={this.keskiarvo()} positiivisia={this.positiivisia()} />
             </div>
         )
     }
-
-    render() {
-        const onkoPalautetta = this.palautteita();
-      return (
+    return (
         <div>
-          <h1>Anna palautetta</h1>
-          <div>
-            <Button handleClick={this.asetaArvoon("hyva", this.state.hyva + 1) } text="Hyvä" />
-            <Button handleClick={this.asetaArvoon("neutraali", this.state.neutraali + 1) } text="Neutraali" />
-            <Button handleClick={this.asetaArvoon("huono", this.state.huono + 1) } text="Huono" />
-            {onkoPalautetta ? ( this.doStats() ) : ( <p>Ei yhtään palautetta annettu</p> )}
-          </div>
+        <h1>anecdote with most votes:</h1>
+        {props.anecdotes[isoimmanindeksi]}
         </div>
-      )
+    )
+}
+
+class App extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      selected: 0,
+      votet: Array(6).fill(0)
     }
   }
+  setSelected = () => { 
+        return () => {
+            this.setState({ selected: this.generateRandom(6) })
+        }
+  }
+  handleVote(i) {
+      const votet = this.state.votet.slice()
+      votet[i] = votet[i] + 1 
+      return () => {
+        this.setState({votet : votet})
+      }
+  }
+  generateRandom(max) {
+    return Math.floor((Math.random() * max) + 0);
+  }
+  
+  render() {
+    return (
+      <div>
+        {this.props.anecdotes[this.state.selected]} 
+        <br />
+        <p>Votes: {this.state.votet[this.state.selected]} </p>
+        <br />
+        <button value="Next anecdote" onClick={this.setSelected()}>Next anecdote</button>
+        <button value="Vote" onClick={this.handleVote(this.state.selected)}>Vote </button>
+        <MostVoted anecdotes={this.props.anecdotes} votes={this.state.votet} />
+      </div>
+    )
+  }
+}
+
+const anecdotes = [
+  'If it hurts, do it more often',
+  'Adding manpower to a late software project makes it later!',
+  'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
+  'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
+  'Premature optimization is the root of all evil.',
+  'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
+]
 
 ReactDOM.render(
-  <App />,
+  <App anecdotes={anecdotes} />,
   document.getElementById('root')
 )
