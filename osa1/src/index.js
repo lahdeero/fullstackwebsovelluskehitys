@@ -22,6 +22,8 @@ const MostVoted = (props) => {
         <div>
         <h1>anecdote with most votes:</h1>
         {props.anecdotes[isoimmanindeksi]}
+        <br />
+        has {isoinluku} votes
         </div>
     )
 }
