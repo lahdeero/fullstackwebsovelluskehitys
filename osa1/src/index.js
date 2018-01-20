@@ -35,9 +35,13 @@ class App extends React.Component {
       }
     }
 
-    asetaHyvaArvoon = (arvo) => () => this.setState({ hyva: arvo })
-    asetaNeutraaliArvoon = (arvo) => () => this.setState({ neutraali: arvo })
-    asetaHuonoArvoon = (arvo) => () => this.setState({ huono: arvo })
+    asetaArvoon(apu, arvo) {
+        let newState = {}
+        newState[apu] = arvo
+        return () => this.setState(newState)
+    }
+
+
 
     keskiarvo() {
         let x = (this.state.hyva * 1 + this.state.neutraali * 0 + this.state.huono * -1) / (this.state.hyva + this.state.huono + this.state.neutraali)
@@ -63,9 +67,9 @@ class App extends React.Component {
         <div>
           <h1>Anna palautetta</h1>
           <div>
-            <Button handleClick={this.asetaHyvaArvoon(this.state.hyva + 1) } text="Hyvä" />
-            <Button handleClick={this.asetaNeutraaliArvoon(this.state.neutraali + 1) } text="Neutraali" />
-            <Button handleClick={this.asetaHuonoArvoon(this.state.huono + 1) } text="Huono" />
+            <Button handleClick={this.asetaArvoon("hyva", this.state.hyva + 1) } text="Hyvä" />
+            <Button handleClick={this.asetaArvoon("neutraali", this.state.neutraali + 1) } text="Neutraali" />
+            <Button handleClick={this.asetaArvoon("huono", this.state.huono + 1) } text="Huono" />
             <h1>statistiikka</h1>
             <p>Ei yhtään palautetta annettu</p>
           </div>
@@ -76,9 +80,9 @@ class App extends React.Component {
         <div>
           <h1>Anna palautetta</h1>
           <div>
-            <Button handleClick={this.asetaHyvaArvoon(this.state.hyva + 1) } text="Hyvä" />
-            <Button handleClick={this.asetaNeutraaliArvoon(this.state.neutraali + 1) } text="Neutraali" />
-            <Button handleClick={this.asetaHuonoArvoon(this.state.huono + 1) } text="Huono" />
+            <Button handleClick={this.asetaArvoon("hyva", this.state.hyva + 1) } text="Hyvä" />
+            <Button handleClick={this.asetaArvoon("neutraali", this.state.neutraali + 1) } text="Neutraali" />
+            <Button handleClick={this.asetaArvoon("huono", this.state.huono + 1) } text="Huono" />
             <Statistics hyva={this.state.hyva} neutraali={this.state.neutraali} huono={this.state.huono}/>
             <Statistic nimi="Keskiarvo" arvo={this.keskiarvo()} />
             <Statistic nimi="Positiivisia" arvo={this.positiivisia()} />
