@@ -1,11 +1,9 @@
 import React from 'react'
 
-const Country = ({ country, changeFilter }) => {
+const Country = ({ country }) => {
   return (
     <li>
-      <div onClick={changeFilter}>
-        {country.name}
-      </div>
+        {country.name} 
     </li>
   )
 }

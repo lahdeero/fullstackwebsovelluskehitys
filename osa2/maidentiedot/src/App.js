@@ -3,6 +3,7 @@ import countryService from './services/countries'
 import Country from './components/Country'
 
 const ShowCountries = (props) => {
+  console.log('filtteri', props.filter)
   if (props.countriesToShow.length > 10) {
     return (
       <div>
@@ -19,13 +20,29 @@ const ShowCountries = (props) => {
         <img width="300" height="200" alt={country.name} src={country.flag} />
       </div>
     )
+  } else {
+    for (let i = 0; i < props.countriesToShow.length; i++) {
+      if (props.countriesToShow[i].name === props.filter) {
+        console.log('menee')
+        const country = props.countriesToShow[i]
+        return (
+          <div>
+            <h1>{country.name} {country.nativeName}</h1>
+            <p>capital: {country.capital}</p>
+            <p>population: {country.population}</p>
+            <img width="300" height="200" alt={country.name} src={country.flag} />
+          </div>
+        ) 
+      } 
+    }
   }
+
   return (
         <div>
           <ul>
             {props.countriesToShow.map(country =>
               <Country key={country.name}
-                country={country}
+                country={country} handleClick={props.handleClick}
               />)}
           </ul>
         </div>
@@ -53,13 +70,23 @@ class App extends React.Component {
     this.setState({ filter: event.target.value })
   }
 
+  handleClick = (filtteri) => {
+    return () => {
+      this.setState({
+        filter: filtteri
+      })
+      console.log('filtteri: ', filtteri)
+    }
+  }
+
+
   render() {
     const countriesToShow = this.state.countries.filter(country => country.name.toUpperCase().includes(this.state.filter.toUpperCase()))
       return (
         <div>
           find countries: 
           <input value={this.state.filter} onChange={this.handleFilter} />
-          <ShowCountries countriesToShow={countriesToShow} changeFilter={this.state.filter} />
+          <ShowCountries countriesToShow={countriesToShow} filter={this.state.filter} />
         </div>
     )
   }
