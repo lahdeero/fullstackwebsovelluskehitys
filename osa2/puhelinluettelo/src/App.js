@@ -1,16 +1,18 @@
 import React from 'react'
 import Person from './components/Person'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-    persons: [],
-    newName: '',
-    newNumber: '',
-    filter: '',
-    error: null
+      persons: [],
+      newName: '',
+      newNumber: '',
+      filter: '',
+      error: null,
+      message: null
     }
   }
 
@@ -18,7 +20,7 @@ class App extends React.Component {
     personService
       .getAll()
       .then(response => {
-        this.setState({persons: response.data})
+        this.setState({persons: response})
       })
   }
 
@@ -30,27 +32,52 @@ class App extends React.Component {
       visible: true
     }
     let found = false;
+    let found_id = 0;
+    let oldnumber = 0;
+    
     for (let i = 0; i < this.state.persons.length; i++) {
       if (this.state.persons[i].name === this.state.newName) {
-        found = true;
+        found = true
+        found_id = this.state.persons[i].id
+        oldnumber = this.state.persons[i].number
         break;
       }
     }
     console.log(found);
-    if (found) {
-      alert("Onjo listalla")
-      return
-    }
-
-    personService
-      .create(personObject) 
-      .then(response => {
-        this.setState({
-          persons: this.state.persons.concat(response.data),
-          newName: '',
-          newNumber: ''
+    if(found) {
+      if (!window.confirm(`'${this.newName}' on jo luettelossa, korvataanko vanha numero uudella?`)) return
+      personService 
+        .update(found_id, personObject)
+        .then(response => {
+          this.setState({
+            message: `Vaihdettiin '${personObject.name}' numeroa`,
+            persons: this.state.persons.filter(e => !e.number.includes(oldnumber)).concat(response),
+            newName: '',
+            newNumber: ''
+          })
+          setTimeout(() => {
+            this.setState({message: null})
+          }, 3000)
         })
-      })
+        .catch(error => {
+          alert(`Henkilö '${personObject.name}' on jo poistettu palvelimelta!`)
+          this.setState({ persons: this.state.persons.filter(n => n.id !== found_id) })
+        })
+    } else {
+      personService
+        .create(personObject) 
+        .then(response => {
+          this.setState({
+            persons: this.state.persons.concat(response),
+            message: `Lisättiin '${personObject.name}' luetteloon`,
+            newName: '',
+            newNumber: ''
+          })
+          setTimeout(() => {
+            this.setState({message: null})
+          }, 3000)
+        })
+    }
   }
 
   handleNewName = (event) => {
@@ -71,28 +98,27 @@ class App extends React.Component {
     return () => {
       const person = this.state.persons.find(n => n.id === id)
       if (!window.confirm(`Poistetaanko '${person.name}' palvelimelta`)) return
-
       personService
         .erase(id)
         .then(res => {
           this.setState({
+            message: `Poistettiin '${person.name}' luettelosta`,
             persons: this.state.persons.filter(e => !e.name.includes(person.name))
           })
+          setTimeout(() => {
+            this.setState({message: null})
+          }, 3000)
         })
         .catch(error => {
-          this.setState({
-          error: `Henkilö '${person.name}' on jo poistettu palvelimelta`
+          alert(`Henkilö '${person.name}' on jo valitettavasti poistettu palvelimelta`)
+          this.setState({ persons: this.state.persons.filter(n => n.id !== id) })
         })
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 50000)
-     })
-
     }
   }
 
   render() {
-    const personsToShow = this.state.persons.filter(person => person.name.includes(this.state.filter))
+    const personsToShow = this.state.persons.filter(person => person.name.toUpperCase().includes(this.state.filter.toUpperCase()))
+
     return (
       <div>
         <div>
@@ -100,6 +126,7 @@ class App extends React.Component {
         </div>
         <h2>Puhelinluettelo</h2>
         <div>
+          <Notification message={this.state.message} />
           Rajaa näytettäviä:
           <input value={this.state.filter} onChange={this.handleFilter} />
         </div>
