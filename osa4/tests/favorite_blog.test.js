@@ -1,9 +1,9 @@
 const listHelper = require('../utils/list_helper')
-const blogHelper = require('../utils/test_blogs')
+const { format, initialBlogs,listWithOneBlog } = require('./test_helper')
 
 describe('favorite blog', () => {
-  const oneBlog = blogHelper.listWithOneBlog
-  const manyBlogs = blogHelper.getExampleBlogs
+  const oneBlog = listWithOneBlog
+  const manyBlogs = initialBlogs
 
   test('when list has only one blog it should be favorite', () => {
     const result = listHelper.favoriteBlog(oneBlog)

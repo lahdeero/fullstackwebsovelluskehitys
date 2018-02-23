@@ -1,4 +1,6 @@
-const getExampleBlogs = [
+const Blog = require('../models/blog')
+
+const initialBlogs = [
   {
     _id: '5a422a851b54a676234d17f7',
     title: 'React patterns',
@@ -58,8 +60,35 @@ const listWithOneBlog = [
     __v: 0
   }
 ]
+const format = (blog) => {
+  return {
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes
+  }
+}
+
+const nonExistingId = async () => {
+  const blog = new Blog()
+  await blog.save()
+  await blog.remove()
+
+  return blog._id.toString()
+}
+
+const blogsInDb = async () => {
+  const blogs = await Blog.find({})
+  return blogs.map(format)
+}
+
+
 
 module.exports = {
-  getExampleBlogs,
-  listWithOneBlog
+  initialBlogs,
+  listWithOneBlog,
+  format,
+  nonExistingId,
+  blogsInDb
 }
+
