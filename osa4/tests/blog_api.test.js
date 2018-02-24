@@ -41,89 +41,109 @@ describe('when there is initially some blogs saved', async () => {
   
     expect(response.body[0].title).toBe('React patterns')
   })
-  describe('POST /api/blogs succeeds with valid data', async () => {
 
-    test('Blog can be added', async () => {
-      const blogsBefore = await helper.blogsInDb()
-      const newBlog = {
-        title: 'Testi blogi by testaaja',
-        author: 'Testaaja',
-        url: 'http://localhost/api/blogs/1337',
-        likes: '5'
-      }
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-    
-      const response = await api
-        .get('/api/blogs')
-    
-      const authors = response.body.map(r => r.author)
-    
-      expect(response.body.length).toBe(blogsBefore.length + 1)
-      expect(authors).toContain('Testaaja')
-    })
-    
-    test('If no likes, set likes to 0', async () => {
-      const newBlog = {
-        title: 'Nobody likes me',
-        author: 'Lonely guy',
-        url: 'http://localhost/api/blogs/101010'
-      }
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-    
-      const response = await api
-        .get('/api/blogs')
-    
-      expect(response.body[response.body.length-1].title).toContain('Nobody likes me')
-      expect(response.body[response.body.length-1].likes).toBe(0)
-    
-    }) 
-    test('Blog needs to have title and url', async () => {
-      const blogsBefore = await helper.blogsInDb()
-      const newBlog = {
-        author: 'No title or url',
-        likes: '3'
-      }
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
-        .expect('Content-Type', /application\/json/)
-    
-      const response = await api
-        .get('/api/blogs')
+  test('Blog can be added', async () => {
+    const blogsBefore = await helper.blogsInDb()
+    const newBlog = {
+      title: 'Testi blogi by testaaja',
+      author: 'Testaaja',
+      url: 'http://localhost/api/blogs/1337',
+      likes: '5'
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const response = await api
+      .get('/api/blogs')
+  
+    const authors = response.body.map(r => r.author)
+  
+    expect(response.body.length).toBe(blogsBefore.length + 1)
+    expect(authors).toContain('Testaaja')
+  })
+  
+  test('If no likes, set likes to 0', async () => {
+    const newBlog = {
+      title: 'Nobody likes me',
+      author: 'Lonely guy',
+      url: 'http://localhost/api/blogs/101010'
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+  
+    const response = await api
+      .get('/api/blogs')
+  
+    expect(response.body[response.body.length-1].title).toContain('Nobody likes me')
+    expect(response.body[response.body.length-1].likes).toBe(0)
+  }) 
+  test('Blog needs to have title and url', async () => {
+    const blogsBefore = await helper.blogsInDb()
+    const newBlog = {
+      author: 'No title or url',
+      likes: '3'
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  
+    const response = await api
+      .get('/api/blogs')
 
-      expect(response.body.length).toBe(blogsBefore.length)
-    }) 
-    test('DELETE /api/blogs/:id succeeds with proper statuscode', async () => {
-      const newBlog = {
-        title: 'This will be short blog',
-        author: 'Born to die',
-        url: 'http://localhost/api/blogs/h3ll',
-        likes: '666'
-      }
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+    expect(response.body.length).toBe(blogsBefore.length)
+  }) 
+  test('DELETE /api/blogs/:id succeeds with proper statuscode', async () => {
+    const newBlog = {
+      title: 'This will be short blog',
+      author: 'Born to die',
+      url: 'http://localhost/api/blogs/h3ll',
+      likes: '666'
+    }
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
 
-      const response = await api
-        .get('/api/blogs')
+    const response = await api
+      .get('/api/blogs')
 
-      const idOfSoonDeleted = response.body[response.body.length-1].id
+    const idOfSoonDeleted = response.body[response.body.length-1].id
 
-      await api
-        .delete(`/api/blogs/${idOfSoonDeleted}`)
-        .expect(204)
-    })
+    await api
+      .delete(`/api/blogs/${idOfSoonDeleted}`)
+      .expect(204)
+    const blogsAfterDelete = await api
+      .get('/api/blogs')
+
+    const authors = blogsAfterDelete.body.map(b => b.author)
+    expect(authors).not.toContain('Born to die')
+  })
+  test('PUT /api/blogs/:id succeeds with proper statuscode', async () => {
+    const blogsBefore = await helper.blogsInDb()
+    const response = await api
+      .get('/api/blogs')
+
+    const idOfSoonModified = response.body[0].id
+    let modifiedBlog = response.body[0]
+    modifiedBlog.likes = modifiedBlog.likes + 1
+
+    await api
+      .put(`/api/blogs/${idOfSoonModified}`)
+      .send(modifiedBlog)
+      .expect(204)
+    const blogsAfterPut = await api
+      .get('/api/blogs')
+
+    expect(blogsAfterPut.body[0].likes-1).toBe(blogsBefore[0].likes)
   })
   afterAll(() => {
     server.close()
