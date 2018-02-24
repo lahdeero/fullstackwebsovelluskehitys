@@ -21,8 +21,53 @@ const favoriteBlog = (blogs) => {
   return blogs[indexOfMax]
 }
 
+const mostBlogs = (blogs) => {
+  let counts = {}
+  let compare = 0
+  let mostFrequent
+
+  const len = blogs.length
+  for (let i = 0; i < len; i++) {
+    let word = blogs[i].author
+
+    if(counts[word] === undefined) counts[word] = 1
+    else counts[word] = counts[word] + 1
+
+    if(counts[word] > compare) {
+      compare = counts[word]
+      mostFrequent = blogs[i]
+    }
+  }
+  const ret = { author: mostFrequent.author, number: compare }
+  return ret
+}
+
+const mostLikes = (blogs) => {
+  let counts = {}
+  let compare = 0
+  let mostFrequent
+
+  const len = blogs.length
+  for (let i = 0; i < len; i++) {
+    let word = blogs[i].author
+    let likes = blogs[i].likes
+
+    if(counts[word] === undefined) counts[word] = likes
+    else counts[word] = counts[word] + likes
+
+    if(counts[word] > compare) {
+      compare = counts[word]
+      mostFrequent = blogs[i]
+    }
+  }
+  const ret = { author: mostFrequent.author, number: compare }
+  return ret
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs,
+  mostLikes
 }

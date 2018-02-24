@@ -1,5 +1,5 @@
 const listHelper = require('../utils/list_helper')
-const { format, initialBlogs,listWithOneBlog } = require('./test_helper')
+const { initialBlogs,listWithOneBlog } = require('./test_helper')
 
 describe('favorite blog', () => {
   const oneBlog = listWithOneBlog

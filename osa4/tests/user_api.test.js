@@ -28,8 +28,49 @@ describe.only('when there is initially one user at db', async () => {
 
     const usersAfterOperation = await helper.usersInDb()
     expect(usersAfterOperation.length).toBe(usersBeforeOperation.length+1)
-    const usernames = usersAfterOperation.map(u=>u.username)
+    const usernames = usersAfterOperation.map(u => u.username)
     expect(usernames).toContain(newUser.username)
+  })
+
+  test('POST /api/users fails with duplicate username', async () => {
+    const usersBeforeOperation = await helper.usersInDb()
+
+    const newUser = {
+      username: 'root',
+      name: 'salainen',
+      password: 'tosisalainen'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const request = await api
+      .get('/api/users')
+
+    expect(request.body.length).toBe(usersBeforeOperation.length)
+  })
+  test('POST /api/users fails with password length < 3', async () => {
+    const usersBeforeOperation = await helper.usersInDb()
+
+    const newUser = {
+      username: 'randomguy',
+      name: 'randomnezz',
+      password: 'pz'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const request = await api
+      .get('/api/users')
+
+    expect(request.body.length).toBe(usersBeforeOperation.length)
   })
   afterAll(() => {
     server.close()

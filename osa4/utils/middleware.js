@@ -1,3 +1,16 @@
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7)
+  }
+  return null
+}
+const tokenExtractor = (request, response, next) => {
+  const token = getTokenFrom(request)
+  request.token = token
+  next()
+}
+
 const logger = (request, response, next) => {
   if ( process.env.NODE_ENV === 'test' ) {
     return next()
@@ -14,6 +27,7 @@ const error = (request, response) => {
 }
 
 module.exports = {
+  tokenExtractor,
   logger,
   error
 }

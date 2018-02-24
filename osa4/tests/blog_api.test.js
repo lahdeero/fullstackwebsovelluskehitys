@@ -31,14 +31,12 @@ describe('when there is initially some blogs saved', async () => {
   test('there are six blogs', async () => {
     const response = await api
       .get('/api/blogs')
-  
     expect(response.body.length).toBe(6)
   })
-  
   test('the first blog is about React patterns', async () => {
     const response = await api
       .get('/api/blogs')
-  
+
     expect(response.body[0].title).toBe('React patterns')
   })
 
@@ -55,16 +53,16 @@ describe('when there is initially some blogs saved', async () => {
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-  
+
     const response = await api
       .get('/api/blogs')
-  
+
     const authors = response.body.map(r => r.author)
-  
+
     expect(response.body.length).toBe(blogsBefore.length + 1)
     expect(authors).toContain('Testaaja')
   })
-  
+
   test('If no likes, set likes to 0', async () => {
     const newBlog = {
       title: 'Nobody likes me',
@@ -76,13 +74,13 @@ describe('when there is initially some blogs saved', async () => {
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-  
+
     const response = await api
       .get('/api/blogs')
-  
+
     expect(response.body[response.body.length-1].title).toContain('Nobody likes me')
     expect(response.body[response.body.length-1].likes).toBe(0)
-  }) 
+  })
   test('Blog needs to have title and url', async () => {
     const blogsBefore = await helper.blogsInDb()
     const newBlog = {
@@ -94,12 +92,12 @@ describe('when there is initially some blogs saved', async () => {
       .send(newBlog)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-  
+
     const response = await api
       .get('/api/blogs')
 
     expect(response.body.length).toBe(blogsBefore.length)
-  }) 
+  })
   test('DELETE /api/blogs/:id succeeds with proper statuscode', async () => {
     const newBlog = {
       title: 'This will be short blog',
