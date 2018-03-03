@@ -1,10 +1,10 @@
 import React from 'react'
 
-const Country = ({ country }) => {
+const Country = ({ country, handleClick }) => {
   return (
-    <li>
-        {country.name} 
-    </li>
+    <div key={country.alpha3Code} onClick={handleClick(country.name)} >
+      {country.name} 
+    </div>
   )
 }
 

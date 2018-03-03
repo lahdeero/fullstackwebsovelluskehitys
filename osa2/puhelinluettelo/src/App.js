@@ -29,7 +29,6 @@ class App extends React.Component {
     const personObject = {
       name: this.state.newName,
       number: this.state.newNumber,
-      visible: true
     }
     let found = false;
     let found_id = 0;
@@ -44,8 +43,9 @@ class App extends React.Component {
       }
     }
     console.log(found);
+    console.log(found_id);
     if(found) {
-      if (!window.confirm(`'${this.newName}' on jo luettelossa, korvataanko vanha numero uudella?`)) return
+      if (!window.confirm(`'${this.state.newName}' on jo luettelossa, korvataanko vanha numero uudella?`)) return
       personService 
         .update(found_id, personObject)
         .then(response => {
@@ -121,9 +121,6 @@ class App extends React.Component {
 
     return (
       <div>
-        <div>
-          debug: {this.state.filter}
-        </div>
         <h2>Puhelinluettelo</h2>
         <div>
           <Notification message={this.state.message} />

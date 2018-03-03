@@ -20,10 +20,9 @@ const ShowCountries = (props) => {
         <img width="300" height="200" alt={country.name} src={country.flag} />
       </div>
     )
-  } else {
+  } else if (props.countriesToShow.length > 1) {
     for (let i = 0; i < props.countriesToShow.length; i++) {
-      if (props.countriesToShow[i].name === props.filter) {
-        console.log('menee')
+      if (props.countriesToShow[i].name.toUpperCase() === props.filter.toUpperCase()) {
         const country = props.countriesToShow[i]
         return (
           <div>
@@ -41,7 +40,7 @@ const ShowCountries = (props) => {
         <div>
           <ul>
             {props.countriesToShow.map(country =>
-              <Country key={country.name}
+              <Country key={country.alpha3Code}
                 country={country} handleClick={props.handleClick}
               />)}
           </ul>
@@ -70,13 +69,10 @@ class App extends React.Component {
     this.setState({ filter: event.target.value })
   }
 
-  handleClick = (filtteri) => {
-    return () => {
+  handleClick = (filtteri) => () => {
       this.setState({
-        filter: filtteri
+        filter: filtteri.toUpperCase()
       })
-      console.log('filtteri: ', filtteri)
-    }
   }
 
 
@@ -86,7 +82,7 @@ class App extends React.Component {
         <div>
           find countries: 
           <input value={this.state.filter} onChange={this.handleFilter} />
-          <ShowCountries countriesToShow={countriesToShow} filter={this.state.filter} />
+          <ShowCountries countriesToShow={countriesToShow} handleClick={this.handleClick} filter={this.state.filter}/>
         </div>
     )
   }
