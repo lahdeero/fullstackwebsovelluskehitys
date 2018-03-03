@@ -6,6 +6,7 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
 import UserLoggedIn from './components/UserLoggedIn'
+import Togglable from './components/Togglable'
 
 class App extends React.Component {
   constructor(props) {
@@ -83,7 +84,8 @@ class App extends React.Component {
     const blogObject = {
       title: this.state.newBlogTitle,
       author: this.state.newBlogAuthor,
-      url: this.state.newBlogUrl
+      url: this.state.newBlogUrl,
+      likes: 0
     }
     blogService
       .create(blogObject)
@@ -104,8 +106,27 @@ class App extends React.Component {
         alert(`Blogin lisäämisessä tapahtui virhe`)
       })
   } 
+  deleteBlog = (id) => {
+    return () => {
+      const blog = this.state.blogs.find(n => n._id === id)
+      if (!window.confirm(`Poistetaanko '${blog.title}' ?`)) return
+      blogService
+        .erase(id)
+        .then(response => {
+          this.setState({
+            message: `Poistettiin '${blog.title}' tietokannasta`,
+            blogs: this.state.blogs.filter(e => !e.title.includes(blog.title))
+          })
+          setTimeout(() => {
+            this.setState({message: null})
+          }, 3000)
+        })
+        .catch(error => {
+          alert(`Et voi poistaa tätä blogia`)
+        })
+    }
+   }
 
-  
   render() {
     const hideWhenVisible = { display: this.state.blogsVisible ? 'none' : '' }
     const showWhenVisible = { display: this.state.blogsVisible ? '' : 'none' }
@@ -118,6 +139,14 @@ class App extends React.Component {
         </div>
       )
     }
+
+    let sortedBlogs = this.state.blogs
+    sortedBlogs.sort(function(a,b) {
+      if (a.likes !== b.likes) {
+        return b.likes - a.likes
+      }
+      return b.title.length - a.title.length
+    }) 
 
     return (
       <div>
@@ -138,7 +167,9 @@ class App extends React.Component {
           <button onClick={e => this.setState({ blogsVisible: false })}>piilota blogit</button>
           <h2>Blogit</h2>
           {this.state.blogs.map(blog =>
-            <Blog key={blog._id} blog={blog} />
+            <Togglable key={blog._id} buttonLabel={blog.title + ' ' +  blog.author}>
+              <Blog key={blog._id} blog={blog} deleteBlog={this.deleteBlog(blog._id)} user={this.state.user}/>
+            </Togglable>
           )}
         </div>
       </div>
