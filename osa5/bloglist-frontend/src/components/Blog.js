@@ -21,19 +21,20 @@ class Blog extends React.Component {
     if (this.state.blog.user) {
       user = this.state.blog.user
     }
+    console.log('debug ', this.state.blog.user)
     const blogObject = {
       id: this.state.blog._id,
       user: user,
       title: this.state.title,
       author: this.state.author,
       url: this.state.url,
-      likes: this.state.likes
+      likes: this.state.likes + 1
     }
     blogService
       .update(blogObject.id, blogObject)
       .then(response => {
         this.setState({
-          likes: blogObject.likes + 1
+          likes: blogObject.likes
         })
       })
       .catch(error => {

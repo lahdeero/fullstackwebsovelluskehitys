@@ -125,7 +125,7 @@ class App extends React.Component {
           alert(`Et voi poistaa tätä blogia`)
         })
     }
-   }
+  }
 
   render() {
     const hideWhenVisible = { display: this.state.blogsVisible ? 'none' : '' }
@@ -150,27 +150,29 @@ class App extends React.Component {
 
     return (
       <div>
-        <Notification message={this.state.error} error={true} />
-        <Notification message={this.state.message} error={false} />
+        <Notification message={this.state.message} error={this.state.error} />
 
         <h1>Blogit</h1>
-        <div>
+        <div className="userLoggedIn">
           <UserLoggedIn user={this.state.user} logout={this.logout}/>
           <NewBlogForm addBlog={this.addBlog} handleBlogChange={this.handleBlogChange} newBlogTitle={this.state.newBlogTitle}
             newBlogAuthor={this.state.newBlogAuthor} newBlogUrl={this.state.newBlogUrl} /> 
         </div>
-
-        <div style={hideWhenVisible}>
-          <button onClick={e => this.setState({ blogsVisible: true })}>näytä blogit</button>
-        </div>
-        <div style={showWhenVisible}>
-          <button onClick={e => this.setState({ blogsVisible: false })}>piilota blogit</button>
-          <h2>Blogit</h2>
-          {this.state.blogs.map(blog =>
-            <Togglable key={blog._id} buttonLabel={blog.title + ' ' +  blog.author}>
-              <Blog key={blog._id} blog={blog} deleteBlog={this.deleteBlog(blog._id)} user={this.state.user}/>
-            </Togglable>
-          )}
+        <br />
+        <br />
+        <div className="blogitDiv">
+          <div style={hideWhenVisible}>
+            <button onClick={e => this.setState({ blogsVisible: true })}>näytä blogit</button>
+          </div>
+          <div style={showWhenVisible}>
+            <button onClick={e => this.setState({ blogsVisible: false })}>piilota blogit</button>
+            <h2>Blogit</h2>
+            {this.state.blogs.map(blog =>
+              <Togglable key={blog._id} buttonLabel={blog.title + ' ' +  blog.author}>
+                <Blog key={blog._id} blog={blog} deleteBlog={this.deleteBlog(blog._id)} user={this.state.user}/>
+              </Togglable>
+            )}
+          </div>
         </div>
       </div>
     );

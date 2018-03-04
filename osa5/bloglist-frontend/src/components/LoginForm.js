@@ -3,8 +3,8 @@ import Notification from './Notification'
 
 const LoginForm = (props) => {
   return (
-    <div>
-      <Notification message={props.error} />
+    <div className="loginForm">
+      <Notification error={props.error} />
       <Notification message={props.message} />
       <h2>Kirjaudu</h2>
   

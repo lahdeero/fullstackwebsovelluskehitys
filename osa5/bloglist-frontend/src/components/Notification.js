@@ -1,23 +1,39 @@
 import React from 'react'
 
 const Notification = ({ message, error }) => {
-  if (message === null) {
+  if ((message === null || message === undefined) && (error === null || error === undefined)) {
     return null
+  } else if ((message !== null && message !== undefined) && (error !== null && error !== undefined)) {
+    console.log('message = ', message)
+    console.log('error =', error)
+    return (
+      <div>
+      <div className="error">
+        {error}
+      </div>
+      <div className="notification">
+        {message}
+      </div>
+    </div>
+    )
   }
-  if (error) {
-    console.log('error true')
+
+  if (error !== null && error !== undefined) {
     return (
       <div className="error">
-        {message}
+        {error}
       </div>
     )
   }
 
-  return (
-    <div className="notification">
-      {message}
-    </div>
-  )
+  if (message !== null && message !== undefined) {
+    return (
+      <div className="notification">
+        {message}
+      </div>
+    )
+  }
+  return null
 }
 
 export default Notification
