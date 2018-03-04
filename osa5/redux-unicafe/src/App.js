@@ -4,7 +4,13 @@ import { createStore } from 'redux'
 import counterReducer from './reducer'
 
 const Statistiikka = () => {
-  const palautteita = store.getState()
+  const palautteita = 10
+  const kaikki = store.getState().good + store.getState().ok + store.getState().bad
+  const keskiarvo = store.getState().good * 1 - store.getState().bad
+  let positiivisia = (store.getState().good / kaikki * 100).toFixed(2)
+  if (isNaN(positiivisia)) {
+    positiivisia = 0
+  }
 
   if (palautteita === 0) {
     return (
@@ -22,28 +28,28 @@ const Statistiikka = () => {
         <tbody>
           <tr>
             <td>hyvä</td>
-            <td></td>
+            <td>{store.getState().good}</td>
           </tr>
           <tr>
             <td>neutraali</td>
-            <td></td>
+            <td>{store.getState().ok}</td>
           </tr>
           <tr>
             <td>huono</td>
-            <td></td>
+            <td>{store.getState().bad}</td>
           </tr>
           <tr>
             <td>keskiarvo</td>
-            <td></td>
+            <td>{keskiarvo}</td>
           </tr>
           <tr>
             <td>positiivisia</td>
-            <td></td>
+            <td>{positiivisia}%</td>
           </tr>
         </tbody>
       </table>
 
-      <button>nollaa tilasto</button>
+      <button onClick={e => store.dispatch({ type: 'ZERO' })}>nollaa tilasto</button>
     </div>
   )
 }
