@@ -1,29 +1,19 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { actionForAnecdote } from '../reducers/anecdoteReducer'
-import { actionForNotification } from '../reducers/notificationReducer'
+import { connect } from 'react-redux'
+import { voteAnecdote } from '../reducers/anecdoteReducer'
+import anecdoteService from '../services/anecdotes'
 
 class AnecdoteList extends React.Component {
-  componentDidMount() {
-    const { store } = this.context
-    this.unsubscribe = store.subscribe(() =>
-      this.forceUpdate()
-    )
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe
-  }
-
-  voteAnecdote = (anecdote) => {
-    store: PropTypes.object
-    return () => {this.context.store.dispatch(actionForAnecdote.vote(anecdote))}
+  voteAnecdote = (anecdote) => async (event) => {
+    event.preventDefault()
+    await anecdoteService.vote(anecdote.id, anecdote)
+    this.props.voteAnecdote(anecdote)
   }
 
   render() {
-    store: PropTypes.object
-    const filter = this.context.store.getState().filter
-    const anecdotes = this.context.store.getState().anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+    const filter = this.props.filter
+    const anecdotes = this.props.anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+    console.log(this.props)
     return (
       <div>
         <h2>Anecdotes</h2>
@@ -45,8 +35,18 @@ class AnecdoteList extends React.Component {
   }
 }
 
-AnecdoteList.contextTypes = {
-  store: PropTypes.object
+const mapStateToProps = (store) => {
+  return {
+    anecdotes: store.anecdotes,
+    filter: store.filter
+  }
 }
+const mapDispatchToProps = {
+  voteAnecdote
+}
+const ConnectedAnecdoteList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AnecdoteList)
 
-export default AnecdoteList
+export default ConnectedAnecdoteList

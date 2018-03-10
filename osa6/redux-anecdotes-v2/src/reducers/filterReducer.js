@@ -7,12 +7,10 @@ const filterReducer = (store = '', action) => {
   return store
 }
 
-export const actionForFilter = {
-  setFilter(filter) {
-    return {
-      type: 'FILTER',
-      filter
-    }
+export const actionForFilter = (filter) => {
+  return {
+    type: 'FILTER',
+    filter
   }
 }
 

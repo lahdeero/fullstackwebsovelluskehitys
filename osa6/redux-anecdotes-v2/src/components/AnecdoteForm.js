@@ -1,27 +1,16 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { actionForAnecdote } from '../reducers/anecdoteReducer'
+import { connect } from 'react-redux'
+import { createAnecdote } from '../reducers/anecdoteReducer'
+import anecdoteService from '../services/anecdotes'
 
 class AnecdoteForm extends React.Component {
-  componentDidMount() {
-    const { store } = this.context
-    this.unsubscribe = store.subscribe(() =>
-      this.forceUpdate()
-    )
-  }
-  componentWillUnmount() {
-    this.unsubscribe()
-  }
-
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault()
-    store: PropTypes.object
     const content = e.target.anecdote.value
-    this.context.store.dispatch( 
-      actionForAnecdote.createNew(content)
-    )
-  
     e.target.anecdote.value = ''
+    const anecdote = await anecdoteService.createNew(content)
+    console.log('anecdote = ', anecdote)
+    this.props.createAnecdote(content, anecdote.id)
   }
    render() {
      return (
@@ -35,9 +24,13 @@ class AnecdoteForm extends React.Component {
      )
    }
 }
-
-AnecdoteForm.contextTypes = {
-  store: PropTypes.object
+const mapDispatchToProps = {
+  createAnecdote
 }
 
-export default AnecdoteForm
+const ConnectedAnecdoteForm = connect(
+  null,
+  mapDispatchToProps 
+)(AnecdoteForm)
+
+export default ConnectedAnecdoteForm
