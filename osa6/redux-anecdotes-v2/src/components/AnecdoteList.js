@@ -1,16 +1,23 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
 import { notify } from '../reducers/notificationReducer'
 
 class AnecdoteList extends React.Component {
+  static propTypes = {
+    filter: PropTypes.string.isRequired,
+    anecdotes: PropTypes.array.isRequired,
+    voteAnecdote: PropTypes.func.isRequired,
+    notify: PropTypes.func.isRequired
+  }
   voteAnecdote = (anecdote) => async (event) => {
     event.preventDefault()
     this.props.voteAnecdote(anecdote)
     this.props.notify(`you voted '${anecdote.content}'`, 10)
   }
 
-  render() {
+  render () {
     const filter = this.props.filter
     const anecdotes = this.props.anecdotes.filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
     return (

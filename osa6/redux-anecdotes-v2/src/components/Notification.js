@@ -1,8 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 class Notification extends React.Component {
-  render() {
+  static propTypes = {
+    notification: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ])
+  }
+  render () {
     const notification = this.props.notification
     const style = {
       border: 'solid',

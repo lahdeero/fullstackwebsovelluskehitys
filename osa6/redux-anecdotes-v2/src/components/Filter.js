@@ -1,14 +1,18 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { actionForFilter } from '../reducers/filterReducer'
 
 class Filter extends React.Component {
+  static propTypes = {
+    actionForFilter: PropTypes.func.isRequired
+  }
   handleChange = (event) => {
     event.preventDefault()
     const filter = event.target.value
     this.props.actionForFilter(filter)
   }
-  render() {
+  render () {
     const style = {
       marginBottom: 10
     }
@@ -16,7 +20,7 @@ class Filter extends React.Component {
     return (
       <div style={style}>
         <br />
-        filter <input onChange={this.handleChange}/>
+        filter <input onChange={this.handleChange} />
       </div>
     )
   }
@@ -31,7 +35,7 @@ const mapDispatchToProps = {
 }
 const ConnectedFilter = connect(
   mapStateToProps,
-  mapDispatchToProps 
+  mapDispatchToProps
 )(Filter)
 
 export default ConnectedFilter

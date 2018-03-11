@@ -1,5 +1,5 @@
 const notificationReducer = (store = ' ', action) => {
-  switch(action.type) {
+  switch (action.type) {
     case 'NOTIFY':
       store = action.data
       return [...store, action.data.notification]
@@ -7,7 +7,7 @@ const notificationReducer = (store = ' ', action) => {
       store = ''
       return store
     default:
-     return store
+      return store
   }
 }
 
@@ -25,5 +25,3 @@ export const notify = (notification, timer) => {
 }
 
 export default notificationReducer
-
-

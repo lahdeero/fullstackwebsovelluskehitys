@@ -4,7 +4,7 @@ const anecdoteReducer = (store = [], action) => {
   if (action.type === 'VOTE') {
     const id = action.data.id
     const anecdoteToVote = store.find(n => n.id === id)
-    const votedAnecdote = { ...anecdoteToVote, votes: anecdoteToVote.votes + 1 } 
+    const votedAnecdote = { ...anecdoteToVote, votes: anecdoteToVote.votes + 1 }
     return store.map(anecdote => anecdote.id !== id ? anecdote : votedAnecdote)
   }
   if (action.type === 'CREATE') {
@@ -32,7 +32,7 @@ export const createAnecdote = (content) => {
     const newAnecdote = await anecdoteService.createNew(content)
     dispatch({
       type: 'CREATE',
-      data: newAnecdote 
+      data: newAnecdote
     })
   }
 }
