@@ -1,30 +1,29 @@
 const notificationReducer = (store = ' ', action) => {
   switch(action.type) {
-    case 'VOTE':
-      store = 'you voted \'' + action.anecdote.content + '\''
-      return store
+    case 'NOTIFY':
+      store = action.data
+      return [...store, action.data.notification]
     case 'HIDE_NOTIFICATION':
       store = ''
       return store
     default:
-      store = ' '
      return store
   }
 }
 
-export const actionForNotification = {
-  notifyVote(anecdote) {
-    return {
-      type: 'VOTE',
-      anecdote
-    }
-  },
-  hideNotification() {
-    console.log('tulee hidenotification')
-    return {
-      type: 'HIDE_NOTIFICATION'
-    }
+export const notify = (notification, timer) => {
+  return async (dispatch) => {
+    dispatch({
+      type: 'NOTIFY',
+      data: notification,
+      timer
+    })
+    setTimeout(() => {
+      dispatch({ type: 'HIDE_NOTIFICATION' })
+    }, timer * 1000)
   }
 }
 
 export default notificationReducer
+
+

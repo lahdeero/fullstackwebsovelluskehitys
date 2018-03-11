@@ -1,53 +1,53 @@
+import anecdoteService from '../services/anecdotes'
+
 const anecdoteReducer = (store = [], action) => {
   if (action.type === 'VOTE') {
-    const old = store.filter(a => a.id !== action.anecdote.id)
-    const voted = store.find(a => a.id === action.anecdote.id)
-
-    return [...old, { ...voted, votes: voted.votes+1} ]
+    const id = action.data.id
+    const anecdoteToVote = store.find(n => n.id === id)
+    const votedAnecdote = { ...anecdoteToVote, votes: anecdoteToVote.votes + 1 } 
+    return store.map(anecdote => anecdote.id !== id ? anecdote : votedAnecdote)
   }
   if (action.type === 'CREATE') {
-    return [...store, { content: action.content, id: action.id, votes:0 }]
+    return [...store, action.data]
   }
   if (action.type === 'INIT_ANECDOTES') {
-    return action.data
+    return action.anecdotes
   }
 
   return store
 }
 
-export const anecdoteInitialization = (data) => {
-  return {
-    type: 'INIT_ANECDOTES',
-    data
+export const anecdoteInitialization = () => {
+  return async (dispatch) => {
+    const anecdotes = await anecdoteService.getAll()
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      anecdotes
+    })
   }
 }
 
-export const createAnecdote = (content, id) => {
-  return {
-    type: 'CREATE',
-    content,
-    id
+export const createAnecdote = (content) => {
+  return async (dispatch) => {
+    const newAnecdote = await anecdoteService.createNew(content)
+    dispatch({
+      type: 'CREATE',
+      data: newAnecdote 
+    })
   }
 }
 export const voteAnecdote = (anecdote) => {
-  return {
-    type: 'VOTE',
-    anecdote
-  }
-}
-
-export const actionForAnecdote = {
-  createNew(content) {
-    return {
-      type: 'CREATE',
-      content
+  return async (dispatch) => {
+    const votedAnecdote = {
+      id: anecdote.id,
+      content: anecdote.content,
+      votes: anecdote.votes + 1
     }
-  },
-  vote(anecdote) {
-    return {
+    await anecdoteService.vote(anecdote.id, votedAnecdote)
+    dispatch({
       type: 'VOTE',
-      anecdote
-    }
+      data: { id: anecdote.id }
+    })
   }
 }
 
