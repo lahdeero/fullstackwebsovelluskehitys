@@ -95,6 +95,7 @@ const Anecdote = ({anecdote}) => {
     <div>
       <h2>{anecdote.content} by {anecdote.author}</h2>
       <p>Has 0 votes</p>
+      <p>for more info see <a href={anecdote.info}>{anecdote.info}</a></p>
     </div>
   )
 }
@@ -146,6 +147,7 @@ class App extends React.Component {
   }
 
   render() {
+
     return (
       <div>
         <Router>
@@ -156,7 +158,7 @@ class App extends React.Component {
               <Route path="/create" render={() => <CreateNew addNew={this.addNew} />} />
               <Route path="/about" render={() => <About />} />
               <Route exact path="/anecdotes/:id" render={({match}) => 
-                <Anecdote anecdote={anecdoteById(match.params.id)} />}
+                <Anecdote anecdote={this.anecdoteById(match.params.id)} />}
               />
             <Footer />
           </div>
