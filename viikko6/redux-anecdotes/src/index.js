@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore, combineReducers } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { composeWithDevTools } from 'redux-devtools-extension'
+import thunk from 'redux-thunk'
 import { Provider } from 'react-redux'
 import App from './App'
 import anecdoteReducer from './reducers/anecdoteReducer'
@@ -13,8 +15,16 @@ const reducer = combineReducers({
 	notification: notificationReducer
 })
 
+// anecdoteService.getAll().then(anecdotes =>
+// 	store.dispatch(initializeAnecdotes(anecdotes))
+// )
 
-const store = createStore(reducer)
+const store = createStore(
+	reducer, 
+	composeWithDevTools(
+		applyMiddleware(thunk)
+	)
+)
 
 const render = () => {
   ReactDOM.render(

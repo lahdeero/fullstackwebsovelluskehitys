@@ -6,14 +6,15 @@ import { notifyAction } from '../reducers/notificationReducer'
 const AnecdoteForm = (props) => {
   const [state, setState] = useState('')
 
-  const addAnecdote = (event) => {
+  const addAnecdote = async (event) => {
     event.preventDefault()
     setState('')
-    props.addAction(event.target.content.value)
-		props.notifyAction(`you created ${event.target.content.value}`)
-		setTimeout(() => {
-			props.notifyAction('')
-		}, 5000)
+		const content = event.target.content.value
+		// anecdoteService.createNew(event.target.content.value)
+		// 	.then(data => props.addAction(data.content))
+		await props.addAction(content)	
+
+		props.notifyAction(`you created '${content}'`, 5)
   }
   const changeValue = (event) => {
     setState(event.target.value)
@@ -35,8 +36,8 @@ const mapDispatchToProps = dispatch => {
 		addAction: content => {
 			dispatch(addAction(content))
 		},
-		notifyAction: message => {
-			dispatch(notifyAction(message))
+		notifyAction: (message, time) => {
+			dispatch(notifyAction(message, time))
 		},
 	}
 }

@@ -4,15 +4,10 @@ import { voteAction } from '../reducers/anecdoteReducer'
 import { notifyAction } from '../reducers/notificationReducer'
 
 const AnecdoteList = (props) => {
-  const vote = (id) => {
-    console.log('vote', id)
-    props.voteAction(id)
-		const anecdote = props.anecdotes.filter(anecdote => anecdote.id === id)[0]
-		console.log('anecdote = ', anecdote)
-		props.notifyAction(`you voted ${anecdote.content}`)
-		setTimeout(() => {
-			props.notifyAction('')
-		}, 5000)
+  const vote = async (id) => {
+		const anecdote = props.visibleAnecdotes.filter(anecdote => anecdote.id === id)[0]
+    await props.voteAction(anecdote)
+		props.notifyAction(`you voted '${anecdote.content}'`, 5)
   }
 
   return (
@@ -46,8 +41,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		notifyAction: message => {
-			dispatch(notifyAction(message))
+		notifyAction: (message, time) => {
+			dispatch(notifyAction(message, time))
 		},
 		voteAction: id => {
 			dispatch(voteAction(id))
