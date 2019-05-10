@@ -22,11 +22,11 @@ router.post('/', async (request, response) => {
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' })
   }
-
   const user = await User.findById(decodedToken.id)
 
   blog.user = user.id
 
+  console.log('blog = ', blog)
   if (!blog.url || !blog.title) {
     return response.status(400).send({ error: 'title or url missing' }).end()
   }

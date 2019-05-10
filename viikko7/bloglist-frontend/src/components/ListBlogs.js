@@ -1,10 +1,9 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import Togglable from './Togglable'
 import NewBlog from './NewBlog'
 import Blog from './Blog'
-import blogService from '../services/blogs'
 import { addBlogAction, likeBlogAction, removeBlogAction } from '../reducers/blogReducer'
-import Notification from './Notification'
 import { notifyAction } from '../reducers/notificationReducer'
 
 const ListBlogs = (props) => {
@@ -12,40 +11,33 @@ const ListBlogs = (props) => {
   const newBlogRef = React.createRef()
 
   const byLikes = (b1, b2) => b2.likes - b1.likes
-  const notify = async (message, type = 'success') => {
-    console.log(message, type)
-    console.log('eka')
-    await notifyAction(message, type, 5)
-    console.log('kolmas')
+
+  const notify = (message, type = 'success') => {
+    props.notifyAction(message, type, 5)
   }
 
   const createBlog = async (blog) => {
-    const createdBlog = await blogService.create(blog)
     newBlogRef.current.toggleVisibility()
-    addBlogAction(props.blogs.concat(createdBlog))
-    await notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`)
+    props.addBlogAction(blog).then(createdBlog => 
+      notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`))
   }
 
-  const likeBlog = async (blog) => {
-    const likedBlog = { ...blog, likes: blog.likes + 1 }
-    const updatedBlog = await blogService.update(likedBlog)
-    likeBlogAction(updatedBlog)
-    await notify(`blog ${updatedBlog.title} by ${updatedBlog.author} liked!`)
+  const likeBlog = (blog) => {
+    props.likeBlogAction(blog).then(updatedBlog =>
+      notify(`blog ${updatedBlog.title} by ${updatedBlog.author} liked!`))
   }
 
-  const removeBlog = async (blog) => {
+  const removeBlog = (blog) => {
     const ok = window.confirm(`remove blog ${blog.title} by ${blog.author}`)
     if (ok) {
-      const updatedBlog = await blogService.remove(blog)
-      removeBlogAction(props.blogs.filter(b => b.id !== blog.id))
-      notify(`blog ${updatedBlog.title} by ${updatedBlog.author} removed!`)
+      props.removeBlogAction(blog).then(removedBlog =>
+        notify(`blog ${removedBlog.title} by ${removedBlog.author} removed!`))
     }
   }
+  console.log(props.blogs)
   return (
     <div>
       <h2>blogs</h2>
-
-      <Notification notification={props.notification} />
 
       <p>{props.user && props.user.name} logged in</p>
       <button onClick={props.handleLogout}>logout</button>
@@ -68,5 +60,20 @@ const ListBlogs = (props) => {
   )
 }
 
+const mapStateToProps = (state) => {
+  return {
+    blogs: state.blogs,
+    user: state.user
+  }
+}
 
-export default ListBlogs
+const mapDispatchToProps = {
+  addBlogAction,
+  likeBlogAction,
+  removeBlogAction,
+  notifyAction
+}
+
+const ConnectedListBlogs = connect(mapStateToProps, mapDispatchToProps)(ListBlogs)
+
+export default ConnectedListBlogs

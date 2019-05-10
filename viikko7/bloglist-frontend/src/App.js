@@ -14,55 +14,42 @@ const App = (props) => {
   const [password] = useField('password')
 
   useEffect(() => {
-    if (props.user !== null) {
-      blogService
-        .getAll().then(blogs => props.initializeBlogs(blogs))
-    }
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       console.log('user parse = ', user)
       blogService.setToken(user.token)
-      loginAction(user)
+      props.loginAction(user)
     }
-  }, [props])
+    blogService
+      .getAll().then(blogs => props.initializeBlogs(blogs))
+  }, [])
 
-  // const notify = async (message, type = 'success') => {
-  //   // setNotification({ message, type })
-  //   // setTimeout(() => setNotification({ message: null }), 10000)
-  //   console.log(message, type)
-  //   console.log('eka')
-  //   await notifyAction(message, type, 5)
-  //   console.log('kolmas')
-  // }
+  const notify = async (message, type = 'success') => {
+    await props.notifyAction(message, type, 5)
+  }
 
-  // const handleLogin = async (event) => {
-  //   event.preventDefault()
-  //   try {
-  //     const user = await loginService.login({
-  //       username: username.value,
-  //       password: password.value
-  //     })
-  //     window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-  //     blogService.setToken(user.token)
-  //     window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-  //     loginAction(user)
-  //     console.log(user)
-  //   } catch (exception) {
-  //     notify('wrong username of password', 'error')
-  //   }
-  // }
+  const handleLogin = async (event) => {
+    event.preventDefault()
+    try {
+      const user = await loginService.login({
+        username: username.value,
+        password: password.value
+      })
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      props.loginAction(user)
+    } catch (exception) {
+      notify('wrong username of password', 'error')
+    }
+  }
 
-  // const handleLogout = () => {
-  //   console.log('eka')
-  //   blogService.destroyToken()
-  //   console.log('toka')
-  //   window.localStorage.removeItem('loggedBlogAppUser')
-  //   console.log('kolmas')
-  //   logoutAction()
-  //   console.log('neljäs')
-  //   console.log(props.user)
-  // }
+  const handleLogout = () => {
+    blogService.destroyToken()
+    window.localStorage.removeItem('loggedBlogAppUser')
+    props.logoutAction()
+  }
 
   if (props.user === null) {
     console.log('on null')
@@ -72,7 +59,7 @@ const App = (props) => {
 
         {/* <Notification notification={props.notification} /> */}
 
-        <form>
+        <form onSubmit={handleLogin}>
           <div>
             käyttäjätunnus
           <input {...username} />
@@ -88,8 +75,8 @@ const App = (props) => {
   } else {
     return (
       <div>
-        <Notification />
-        <ListBlogs user={props.user} blogs={props.blogs} />
+        {props.notification && props.notification.message && <Notification />}
+        <ListBlogs handleLogout={handleLogout} />
       </div>
     )
   }
