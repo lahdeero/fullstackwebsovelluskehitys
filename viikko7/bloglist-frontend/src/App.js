@@ -1,138 +1,119 @@
-import React, { useState, useEffect } from 'react'
-import Blog from './components/Blog'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
 import { useField } from './hooks'
+import { notifyAction } from './reducers/notificationReducer'
+import { initializeBlogs, addBlogAction, likeBlogAction, removeBlogAction } from './reducers/blogReducer'
+import ListBlogs from './components/ListBlogs';
+import { loginAction, logoutAction } from './reducers/userReducer'
 
-const App = () => {
+const App = (props) => {
   const [username] = useField('text')
   const [password] = useField('password')
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({
-    message: null
-  })
 
   useEffect(() => {
-    blogService.getAll().then(blogs => {
-      setBlogs(blogs)
-    })
-  }, [])
-
-  useEffect(() => {
+    if (props.user !== null) {
+      blogService
+        .getAll().then(blogs => props.initializeBlogs(blogs))
+    }
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      console.log('user parse = ', user)
       blogService.setToken(user.token)
+      loginAction(user)
     }
-  }, [])
+  }, [props])
 
-  const notify = (message, type = 'success') => {
-    setNotification({ message, type })
-    setTimeout(() => setNotification({ message: null }), 10000)
-  }
+  // const notify = async (message, type = 'success') => {
+  //   // setNotification({ message, type })
+  //   // setTimeout(() => setNotification({ message: null }), 10000)
+  //   console.log(message, type)
+  //   console.log('eka')
+  //   await notifyAction(message, type, 5)
+  //   console.log('kolmas')
+  // }
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    try {
-      const user = await loginService.login({
-        username: username.value,
-        password: password.value
-      })
+  // const handleLogin = async (event) => {
+  //   event.preventDefault()
+  //   try {
+  //     const user = await loginService.login({
+  //       username: username.value,
+  //       password: password.value
+  //     })
+  //     window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+  //     blogService.setToken(user.token)
+  //     window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+  //     loginAction(user)
+  //     console.log(user)
+  //   } catch (exception) {
+  //     notify('wrong username of password', 'error')
+  //   }
+  // }
 
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-    } catch (exception) {
-      notify('wrong username of password', 'error')
-    }
-  }
+  // const handleLogout = () => {
+  //   console.log('eka')
+  //   blogService.destroyToken()
+  //   console.log('toka')
+  //   window.localStorage.removeItem('loggedBlogAppUser')
+  //   console.log('kolmas')
+  //   logoutAction()
+  //   console.log('neljäs')
+  //   console.log(props.user)
+  // }
 
-  const handleLogout = () => {
-    setUser(null)
-    blogService.destroyToken()
-    window.localStorage.removeItem('loggedBlogAppUser')
-  }
-
-  const createBlog = async (blog) => {
-    const createdBlog = await blogService.create(blog)
-    newBlogRef.current.toggleVisibility()
-    setBlogs(blogs.concat(createdBlog))
-    notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`)
-  }
-
-  const likeBlog = async (blog) => {
-    const likedBlog = { ...blog, likes: blog.likes + 1 }
-    const updatedBlog = await blogService.update(likedBlog)
-    setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
-    notify(`blog ${updatedBlog.title} by ${updatedBlog.author} liked!`)
-  }
-
-  const removeBlog = async (blog) => {
-    const ok = window.confirm(`remove blog ${blog.title} by ${blog.author}`)
-    if (ok) {
-      const updatedBlog = await blogService.remove(blog)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
-      notify(`blog ${updatedBlog.title} by ${updatedBlog.author} removed!`)
-    }
-  }
-
-  if (user === null) {
+  if (props.user === null) {
+    console.log('on null')
     return (
       <div>
         <h2>log in to application</h2>
 
-        <Notification notification={notification} />
+        {/* <Notification notification={props.notification} /> */}
 
-        <form onSubmit={handleLogin}>
+        <form>
           <div>
             käyttäjätunnus
-            <input {...username} />
+          <input {...username} />
           </div>
           <div>
             salasana
-            <input {...password} />
+          <input {...password} />
           </div>
           <button type="submit">kirjaudu</button>
         </form>
       </div>
     )
+  } else {
+    return (
+      <div>
+        <Notification />
+        <ListBlogs user={props.user} blogs={props.blogs} />
+      </div>
+    )
   }
-
-  const newBlogRef = React.createRef()
-
-  const byLikes = (b1, b2) => b2.likes - b1.likes
-  console.log(blogs)
-
-  return (
-    <div>
-      <h2>blogs</h2>
-
-      <Notification notification={notification} />
-
-      <p>{user.name} logged in</p>
-      <button onClick={handleLogout}>logout</button>
-
-      <Togglable buttonLabel='create new' ref={newBlogRef}>
-        <NewBlog createBlog={createBlog} />
-      </Togglable>
-
-      {blogs.sort(byLikes).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          like={likeBlog}
-          remove={removeBlog}
-          user={user}
-          creator={blog.user.username === user.username}
-        />
-      )}
-    </div>
-  )
 }
 
-export default App
+
+const mapStateToProps = (state) => {
+  return {
+    notification: state.notification,
+    blogs: state.blogs,
+    user: state.user
+  }
+}
+
+const mapDispatchToProps = {
+  loginAction,
+  logoutAction,
+  initializeBlogs,
+  addBlogAction,
+  likeBlogAction,
+  removeBlogAction,
+  notifyAction
+}
+
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App)
+
+export default ConnectedApp
