@@ -1,5 +1,8 @@
+import blogService from '../services/blogs'
+
 export const loginAction = (user) => {
   return async dispatch => {
+    blogService.setToken(user.token)
     dispatch({
       type: 'LOGIN',
       data: user

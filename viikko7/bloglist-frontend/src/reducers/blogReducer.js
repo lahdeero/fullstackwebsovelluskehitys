@@ -1,7 +1,8 @@
 import blogService from '../services/blogs'
 
-export const initializeBlogs = (blogs) => {
+export const initializeBlogs = () => {
   return async dispatch => {
+    const blogs = await blogService.getAll()
     dispatch({
       type: 'INIT',
       data: blogs
@@ -20,7 +21,7 @@ export const addBlogAction = (blog) => {
 }
 export const likeBlogAction = (blog) => {
   return async dispatch => {
-    const updatedBlog = await blogService.update({...blog, likes: blog.likes + 1})
+    const updatedBlog = await blogService.update({ ...blog, likes: blog.likes + 1 })
     dispatch({
       type: 'LIKE',
       data: updatedBlog

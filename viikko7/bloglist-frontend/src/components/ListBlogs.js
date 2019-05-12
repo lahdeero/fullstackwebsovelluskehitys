@@ -18,7 +18,7 @@ const ListBlogs = (props) => {
 
   const createBlog = async (blog) => {
     newBlogRef.current.toggleVisibility()
-    props.addBlogAction(blog).then(createdBlog => 
+    props.addBlogAction(blog).then(createdBlog =>
       notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`))
   }
 
@@ -34,13 +34,11 @@ const ListBlogs = (props) => {
         notify(`blog ${removedBlog.title} by ${removedBlog.author} removed!`))
     }
   }
+
   console.log(props.blogs)
   return (
     <div>
       <h2>blogs</h2>
-
-      <p>{props.user && props.user.name} logged in</p>
-      <button onClick={props.handleLogout}>logout</button>
 
       <Togglable buttonLabel='create new' ref={newBlogRef}>
         <NewBlog createBlog={createBlog} />
