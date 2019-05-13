@@ -13,10 +13,13 @@ const Menu = (props) => {
 
   return (
     <div>
-      <Link to='/'>Blogs</Link>&nbsp;
-      <Link to='/users'>Users</Link>&nbsp;
-      {props.user && props.user.name && `${props.user.username} logged in`}&nbsp;
-      <button onClick={handleLogout}>logout</button>
+      <div>
+        <Link to='/'>Blogs</Link>&nbsp;
+        <Link to='/users'>Users</Link>&nbsp;
+        {props.user && props.user.name && `${props.user.username} logged in`}&nbsp;
+        <button onClick={handleLogout}>logout</button>
+      </div>
+      <h2>blog app</h2>
     </div>
   )
 

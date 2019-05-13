@@ -1,44 +1,63 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
+import { connect } from 'react-redux'
+import { notifyAction } from '../reducers/notificationReducer'
+import { likeBlogAction, commentBlogAction } from '../reducers/blogReducer'
+import { useField } from '../hooks'
 
-const Blog = ({ blog, like, remove, creator }) => {
-  const [expanded, setExpanded] = useState(false)
+const Blog = (props) => {
+  const { blog } = props
+  const [comment, commentReset] = useField('text')
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
+  const notify = (message, type = 'success') => {
+    props.notifyAction(message, type, 5)
+  }
+  const likeBlog = (blog) => {
+    props.likeBlogAction(blog).then(updatedBlog =>
+      notify(`blog ${updatedBlog.title} by ${updatedBlog.author} liked!`))
   }
 
-  const details = () => (
-    <div className='details'>
-      <a href={blog.url}>{blog.url}</a>
-      <div>{blog.likes} likes
-        <button onClick={() => like(blog)}>like</button>
-      </div>
-      <div>added by {blog.user.name}</div>
-      {creator && (<button onClick={() => remove(blog)}>remove </button>)}
-    </div>
-  )
+  const handleSubmit = (event) => {
+    event.preventDefault()
+    props.commentBlogAction({ ...blog, comments: blog.comments.concat(comment.value) })
+    commentReset()
+  }
 
+  console.log(blog)
+  if (!blog) {
+    return <div></div>
+  }
   return (
-    <div style={blogStyle}>
-      <div onClick={() => setExpanded(!expanded)} className='name'>
-        {blog.title} {blog.author}
+    <div>
+      <div>
+        <h2>{blog.title} {blog.author}</h2>
+
+        <a href={blog.url}>{blog.url}</a> <br />
+        <div>{blog.likes} likes
+        <button onClick={() => likeBlog(blog)}>like</button>
+        </div>
+        Added by {blog.user.username}
       </div>
-      {expanded && details()}
+      <h3>comments</h3>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <input {...comment} />
+          <button type="submit">add comment</button>
+        </form>
+      </div>
+      <ul>
+        {blog.comments && blog.comments.map(comment =>
+          <li key={comment}>{comment}</li>)}
+      </ul>
     </div>
   )
 }
 
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  like: PropTypes.func.isRequired,
-  remove: PropTypes.func.isRequired,
-  creator: PropTypes.bool.isRequired
+const mapDispatchToProps = {
+  likeBlogAction,
+  notifyAction,
+  commentBlogAction
 }
 
-export default Blog
+const ConnectedBlog = connect(null, mapDispatchToProps)(Blog)
+
+export default ConnectedBlog

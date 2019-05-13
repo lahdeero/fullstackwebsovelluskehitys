@@ -29,6 +29,16 @@ export const likeBlogAction = (blog) => {
     return updatedBlog
   }
 }
+export const commentBlogAction = (blog) => {
+  return async dispatch => {
+    const updatedBlog = await blogService.comment(blog)
+    dispatch({
+      type: 'COMMENT',
+      data: updatedBlog
+    })
+    return updatedBlog
+  }
+}
 
 export const removeBlogAction = (blog) => {
   return async dispatch => {
@@ -49,6 +59,8 @@ const blogReducer = (state = [], action) => {
     case 'ADD':
       return state.concat(action.data)
     case 'LIKE':
+      return state.map(b => b.id === action.data.id ? action.data : b)
+    case 'COMMENT':
       return state.map(b => b.id === action.data.id ? action.data : b)
     case 'REMOVE':
       return state.filter(blog => blog.id !== action.data.id)

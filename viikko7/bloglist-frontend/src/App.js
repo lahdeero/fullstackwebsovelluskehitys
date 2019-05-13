@@ -6,6 +6,7 @@ import ListUsers from './components/ListUsers'
 import User from './components/User'
 import Menu from './components/Menu'
 import Login from './components/Login'
+import Blog from './components/Blog'
 import { notifyAction } from './reducers/notificationReducer'
 import { initializeBlogs, addBlogAction, likeBlogAction, removeBlogAction } from './reducers/blogReducer'
 import ListBlogs from './components/ListBlogs'
@@ -22,9 +23,12 @@ const App = (props) => {
     }
   }, [])
 
+  const blogById = (id) => {
+    const ret = props.blogs.find(b => b.id === id)
+    return ret
+  }
 
   if (props.user === null) {
-    console.log('on null')
     return (
       <Login />
     )
@@ -35,6 +39,9 @@ const App = (props) => {
         <Router>
           <Menu />
           <Route exact path='/' render={() => <ListBlogs />} />
+          <Route exact path='/blogs/:id' render={({ match }) =>
+            <Blog blog={blogById(match.params.id)} />
+          } />
           <Route exact path='/users/:id' component={User} render={() => <User users={users} />} />
           <Route exact path='/users' render={() => <ListUsers setUsers={setUsers} users={users} />} />
         </Router>

@@ -55,6 +55,19 @@ router.put('/:id', async (request, response) => {
   response.json(updatedNote.toJSON())
 })
 
+router.post('/:id/comment', async (request, response) => {
+  const { author, title, url, likes, comments } = request.body
+
+  const blog = {
+    author, title, url, likes, comments
+  }
+
+  const updatedNote = await Blog
+    .findByIdAndUpdate(request.params.id, blog, { new: true })
+
+  response.json(updatedNote.toJSON())
+})
+
 router.delete('/:id', async (request, response) => {
   if (!request.token) {
     return response.status(401).json({ error: 'token missing' })

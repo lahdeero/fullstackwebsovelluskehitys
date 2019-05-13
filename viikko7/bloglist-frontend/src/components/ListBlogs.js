@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import Togglable from './Togglable'
 import NewBlog from './NewBlog'
-import Blog from './Blog'
+import ListBlog from './ListBlog'
 import { addBlogAction, likeBlogAction, removeBlogAction } from '../reducers/blogReducer'
 import { notifyAction } from '../reducers/notificationReducer'
 
@@ -20,11 +20,6 @@ const ListBlogs = (props) => {
     newBlogRef.current.toggleVisibility()
     props.addBlogAction(blog).then(createdBlog =>
       notify(`a new blog ${createdBlog.title} by ${createdBlog.author} added`))
-  }
-
-  const likeBlog = (blog) => {
-    props.likeBlogAction(blog).then(updatedBlog =>
-      notify(`blog ${updatedBlog.title} by ${updatedBlog.author} liked!`))
   }
 
   const removeBlog = (blog) => {
@@ -45,10 +40,9 @@ const ListBlogs = (props) => {
       </Togglable>
 
       {props.blogs.sort(byLikes).map(blog =>
-        <Blog
+        <ListBlog
           key={blog.id}
           blog={blog}
-          like={likeBlog}
           remove={removeBlog}
           user={props.user}
           creator={blog.user.username === props.user.username}
