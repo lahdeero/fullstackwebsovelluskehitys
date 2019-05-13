@@ -5,6 +5,7 @@ import NewBlog from './NewBlog'
 import ListBlog from './ListBlog'
 import { addBlogAction, likeBlogAction, removeBlogAction } from '../reducers/blogReducer'
 import { notifyAction } from '../reducers/notificationReducer'
+import { ListGroup, ListGroupItem } from 'reactstrap'
 
 const ListBlogs = (props) => {
 
@@ -39,15 +40,19 @@ const ListBlogs = (props) => {
         <NewBlog createBlog={createBlog} />
       </Togglable>
 
-      {props.blogs.sort(byLikes).map(blog =>
-        <ListBlog
-          key={blog.id}
-          blog={blog}
-          remove={removeBlog}
-          user={props.user}
-          creator={blog.user.username === props.user.username}
-        />
-      )}
+      <ListGroup>
+        {props.blogs.sort(byLikes).map(blog =>
+          <ListGroupItem>
+            <ListBlog
+              key={blog.id}
+              blog={blog}
+              remove={removeBlog}
+              user={props.user}
+              creator={blog.user.username === props.user.username}
+            />
+          </ListGroupItem>
+        )}
+      </ListGroup>
     </div>
   )
 }

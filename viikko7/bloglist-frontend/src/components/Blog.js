@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { notifyAction } from '../reducers/notificationReducer'
 import { likeBlogAction, commentBlogAction } from '../reducers/blogReducer'
 import { useField } from '../hooks'
+import { Table, Button } from 'reactstrap'
 
 const Blog = (props) => {
   const { blog } = props
@@ -18,8 +19,10 @@ const Blog = (props) => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    props.commentBlogAction({ ...blog, comments: blog.comments.concat(comment.value) })
     commentReset()
+    props.commentBlogAction({ ...blog, comments: blog.comments.concat(comment.value) }).then(
+      commentedBlog => notify(`you commented ${commentedBlog.title}`)
+    )
   }
 
   console.log(blog)
@@ -28,27 +31,35 @@ const Blog = (props) => {
   }
   return (
     <div>
-      <div>
-        <h2>{blog.title} {blog.author}</h2>
-
-        <a href={blog.url}>{blog.url}</a> <br />
-        <div>{blog.likes} likes
-        <button onClick={() => likeBlog(blog)}>like</button>
-        </div>
-        Added by {blog.user.username}
-      </div>
-      <h3>comments</h3>
+      <Table>
+        <thead>
+          <th><h2>{blog.title} {blog.author}</h2></th>
+        </thead>
+        <tbody>
+          <tr>
+            <a href={blog.url}>{blog.url}</a> <br />
+          </tr>
+          <tr>
+            <td>{blog.likes} likes</td>
+            <td><Button color="success" onClick={() => likeBlog(blog)}>like</Button></td>
+          </tr>
+          <tr>
+            <td>Added by {blog.user.username}</td>
+          </tr>
+        </tbody>
+      </Table>
       <div>
         <form onSubmit={handleSubmit}>
           <input {...comment} />
-          <button type="submit">add comment</button>
+          <Button color="primary" type="submit">add comment</Button>
         </form>
       </div>
+      <h3>comments</h3>
       <ul>
         {blog.comments && blog.comments.map(comment =>
           <li key={comment}>{comment}</li>)}
       </ul>
-    </div>
+    </div >
   )
 }
 

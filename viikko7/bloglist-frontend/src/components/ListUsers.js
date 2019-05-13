@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import usersService from '../services/users'
+import { Table } from 'reactstrap'
 
 const ListUsers = (props) => {
 
@@ -12,12 +13,12 @@ const ListUsers = (props) => {
 
   return (
     <div>
-      <h2>Users:</h2>
-      <table>
+      <h2>Users</h2>
+      <Table>
         <thead>
           <tr>
-            <td></td>
-            <td><b>blogs created</b></td>
+            <th>username</th>
+            <th><b>blogs created</b></th>
           </tr>
         </thead>
         <tbody>
@@ -28,7 +29,7 @@ const ListUsers = (props) => {
             </tr>
           )}
         </tbody>
-      </table>
+      </Table>
     </div>
   )
 

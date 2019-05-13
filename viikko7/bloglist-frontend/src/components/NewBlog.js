@@ -1,5 +1,7 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { useField } from '../hooks'
+import { Button } from 'reactstrap'
 
 const NewBlog = (props) => {
   const [title, titleReset] = useField('text')
@@ -11,7 +13,7 @@ const NewBlog = (props) => {
     props.createBlog({
       title: title.value,
       author: author.value,
-      url: url.value
+      url: url.value,
     })
     titleReset()
     authorReset()
@@ -35,10 +37,19 @@ const NewBlog = (props) => {
           url:
           <input {...url} />
         </div>
-        <button type='submit'>create</button>
+        <Button color="success" type='submit'>create</Button>
       </form>
     </div>
   )
 }
 
+// const mapStateToProps = (state) => {
+//   return {
+//     user: state.user
+//   }
+// }
+
+// const ConnectedNewBlog = connect(mapStateToProps)(NewBlog)
+
+// export default ConnectedNewBlog
 export default NewBlog

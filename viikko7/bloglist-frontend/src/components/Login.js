@@ -5,6 +5,7 @@ import loginService from '../services/login'
 import blogService from '../services/blogs'
 import { useField } from '../hooks'
 import { loginAction } from '../reducers/userReducer'
+import { Button, Input, FormGroup, Form } from 'reactstrap'
 
 const Login = (props) => {
   const [username] = useField('text')
@@ -33,18 +34,18 @@ const Login = (props) => {
     <div>
       <h2>log in to application</h2>
       {props.notification && props.notification.message && <Notification />}
-      <form onSubmit={handleLogin}>
-        <div>
+      <Form onSubmit={handleLogin}>
+        <FormGroup>
           käyttäjätunnus
-          <input {...username} />
-        </div>
-        <div>
+          <Input {...username} />
+        </FormGroup>
+        <FormGroup>
           salasana
-          <input {...password} />
-        </div>
-        <button type="submit">kirjaudu</button>
-      </form>
-    </div>
+          <Input {...password} />
+        </FormGroup>
+        <Button outline color="success" type="submit">kirjaudu</Button>
+      </Form>
+    </div >
   )
 }
 
