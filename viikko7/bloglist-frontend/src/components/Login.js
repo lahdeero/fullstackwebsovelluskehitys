@@ -32,16 +32,16 @@ const Login = (props) => {
 
   return (
     <div>
-      <h2>log in to application</h2>
+      <h2>log in to Blog app</h2>
       {props.notification && props.notification.message && <Notification />}
       <Form onSubmit={handleLogin}>
         <FormGroup>
           käyttäjätunnus
-          <Input {...username} />
+          <Input id='username' {...username} />
         </FormGroup>
         <FormGroup>
           salasana
-          <Input {...password} />
+          <Input id='password' {...password} />
         </FormGroup>
         <Button outline color="success" type="submit">kirjaudu</Button>
       </Form>

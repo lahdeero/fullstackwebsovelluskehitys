@@ -36,13 +36,13 @@ const ListBlogs = (props) => {
     <div>
       <h2>blogs</h2>
 
-      <Togglable buttonLabel='create new' ref={newBlogRef}>
+      <Togglable buttonLabel='new blog' ref={newBlogRef}>
         <NewBlog createBlog={createBlog} />
       </Togglable>
 
       <ListGroup>
         {props.blogs.sort(byLikes).map(blog =>
-          <ListGroupItem>
+          <ListGroupItem key={blog.id}>
             <ListBlog
               key={blog.id}
               blog={blog}

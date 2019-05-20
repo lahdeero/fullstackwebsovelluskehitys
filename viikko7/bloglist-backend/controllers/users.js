@@ -3,9 +3,9 @@ const usersRouter = require('express').Router()
 const User = require('../models/user')
 
 usersRouter.get('/user/:id', async (request, response) => {
-	console.log(request.params)
+  console.log(request.params)
   const user = await User.findById(request.params.id)
-	console.log(user)
+  console.log(user)
   response.json(user)
 })
 
@@ -18,6 +18,7 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response, next) => {
   try {
+    // console.log(request.body)
     const { username, password, name } = request.body
 
     if (!password || password.length < 3) {

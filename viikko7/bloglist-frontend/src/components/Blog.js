@@ -41,7 +41,7 @@ const Blog = (props) => {
           </tr>
           <tr>
             <td>{blog.likes} likes</td>
-            <td><Button color="success" onClick={() => likeBlog(blog)}>like</Button></td>
+            <td><Button id="like" color="success" onClick={() => likeBlog(blog)}>like</Button></td>
           </tr>
           <tr>
             <td>Added by {blog.user.username}</td>
@@ -50,7 +50,7 @@ const Blog = (props) => {
       </Table>
       <div>
         <form onSubmit={handleSubmit}>
-          <input {...comment} />
+          <input id="comment" {...comment} />
           <Button color="primary" type="submit">add comment</Button>
         </form>
       </div>

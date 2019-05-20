@@ -14,6 +14,7 @@ const usersRouter = require('./controllers/users')
 app.use(cors())
 app.use(bodyParser.json())
 
+console.log('NODE_ENV = ', process.env.NODE_ENV)
 console.log('connecting to', config.MONGODB_URI)
 
 mongoose.connect(config.MONGODB_URI, { useFindAndModify: false, useNewUrlParser: true, useCreateIndex: true })
@@ -29,6 +30,11 @@ app.use(tokenExtractor)
 app.use('/api/login', loginRouter)
 app.use('/api/blogs', blogsRouter)
 app.use('/api/users', usersRouter)
+if (process.env.NODE_ENV === 'test') {
+  console.log('joo')
+  const testingRouter = require('./controllers/testingRouter')
+  app.use('/api/testing', testingRouter)
+}
 
 app.use(errorHandler)
 

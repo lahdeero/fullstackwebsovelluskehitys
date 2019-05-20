@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { useField } from '../hooks'
 import { Button } from 'reactstrap'
 
@@ -27,17 +26,17 @@ const NewBlog = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           title:
-          <input {...title} />
+          <input id="title" {...title} />
         </div>
         <div>
           author:
-          <input {...author} />
+          <input id="author" {...author} />
         </div>
         <div>
           url:
-          <input {...url} />
+          <input id="url" {...url} />
         </div>
-        <Button color="success" type='submit'>create</Button>
+        <Button id="create" color="success" type='submit'>create</Button>
       </form>
     </div>
   )
