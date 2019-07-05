@@ -4,10 +4,12 @@ const mongoose = require('mongoose')
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
+const Person = require('./models/person')
 const jwt = require('jsonwebtoken')
 
 const MONGODB_URI = process.env.MONGODB_URI
 console.log('Connecting to ', MONGODB_URI)
+const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
   .then(() => {
@@ -21,6 +23,7 @@ const typeDefs = gql`
   type User {
     username: String!
     favoriteGenre: String!
+    friends: [User]
     id: ID!
   }
   type Token {
@@ -34,13 +37,6 @@ const typeDefs = gql`
     genres: [String!]!
     id: ID!
   }
-
-	type Author {
-    name: String!
-    id: String!
-    born: Int
-		bookCount: Int!
-	}
 
 	type Mutation {
 		addBook(
@@ -73,9 +69,14 @@ const typeDefs = gql`
     me: User
   }
 
+	type Author {
+    name: String!
+    id: String!
+    born: Int
+		bookCount: Int!
+	}
 `
 
-const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
 const resolvers = {
   Mutation: {
@@ -130,7 +131,6 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Book.collection.countDocuments(),
     allBooks: (root, args) => {
-      console.log('genre = ', args.genre)
       if (args.genre) {
         return Book.find({ genres: args.genre }).populate('author')
       }
@@ -138,6 +138,9 @@ const resolvers = {
     },
     allAuthors: () => {
       return Author.find({})
+    },
+    me: (root, args, context) => {
+      return context.currentUser
     }
   },
   Author: {
@@ -150,6 +153,15 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null
+    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+      const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET)
+      const currentUser = await User.findById(decodedToken.id)
+      // console.log('currUser: ', currentUser)
+      return { currentUser }
+    }
+  }
 })
 
 server.listen().then(({ url }) => {
