@@ -4,14 +4,16 @@ const mongoose = require('mongoose')
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/user')
-const Person = require('./models/person')
 const jwt = require('jsonwebtoken')
 
 const MONGODB_URI = process.env.MONGODB_URI
 console.log('Connecting to ', MONGODB_URI)
 const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true })
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useCreateIndex: true
+})
   .then(() => {
     console.log('connected to MongoDB')
   })
@@ -103,7 +105,10 @@ const resolvers = {
 
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     },
-    addBook: async (root, args) => {
+    addBook: async (root, args, { currentUser }) => {
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
       let author = await Author.findOne({ name: args.author })
       try {
         if (!author) {
@@ -116,7 +121,10 @@ const resolvers = {
         })
       }
     },
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, { currentUser }) => {
+      if (!currentUser) {
+        throw new AuthenticationError("not authenticated")
+      }
       try {
         await Author.updateOne({ name: args.name }, { $set: { "born": args.setBornTo } })
         return Author.findOne({ name: args.name })
@@ -145,7 +153,7 @@ const resolvers = {
   },
   Author: {
     bookCount: (root) => {
-      return Book.find({ author: root }).count()
+      return Book.find({ author: root }).countDocuments()
     }
   }
 }
