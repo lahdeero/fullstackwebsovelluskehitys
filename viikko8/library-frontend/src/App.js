@@ -1,3 +1,4 @@
+import { gql } from 'apollo-boost'
 import React, { useState, useEffect } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -6,7 +7,6 @@ import LoginForm from './components/LoginForm'
 import Recommend from './components/Recommend'
 import { Mutation, useMutation, Query, useApolloClient, useSubscription } from 'react-apollo'
 import { LOGIN, ME, ALL_AUTHORS, CREATE_BOOK, ALL_BOOKS, BOOK_ADDED } from './queries'
-
 
 const App = () => {
   const client = useApolloClient()
@@ -38,7 +38,7 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       const addedBook = subscriptionData.data.bookAdded
-      console.log(`${addedBook.name} added`)
+      window.alert(`${addedBook.title} added`)
       updateCacheWith(addedBook)
     }
   })
@@ -57,7 +57,7 @@ const App = () => {
 
   const logout = () => {
     setToken(null)
-    localStorage.removeItem('lbToken')
+    localStorage.clear()
     client.clearStore()
   }
 

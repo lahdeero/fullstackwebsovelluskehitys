@@ -39,7 +39,7 @@ const link = split(
 )
 
 const client = new ApolloClient({
-	link,
+	link: link,
 	cache: new InMemoryCache()
 })
 

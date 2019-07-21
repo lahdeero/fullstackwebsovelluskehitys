@@ -147,14 +147,36 @@ const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Book.collection.countDocuments(),
-    allBooks: (root, args) => {
-      if (args.genre) {
+    allBooks: (args) => {
+      if (args && args.genre) {
         return Book.find({ genres: args.genre }).populate('author')
       }
       return Book.find({}).populate('author')
     },
     allAuthors: () => {
-      return Author.find({})
+      return Author.aggregate(
+        [
+          {
+            $lookup: {
+              from: 'books',
+              localField: '_id',
+              foreignField: 'author',
+              as: 'books',
+            },
+          },
+          {
+            $addFields: {
+              bookCount: {
+                $size: '$books'
+              },
+            },
+          },
+          {
+            $sort: {
+              bookCount: -1,
+            },
+          },
+        ])
     },
     me: (root, args, context) => {
       return context.currentUser

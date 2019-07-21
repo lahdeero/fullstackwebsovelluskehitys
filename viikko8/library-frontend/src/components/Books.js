@@ -12,7 +12,7 @@ const Books = (props) => {
   }
 
   return (
-    <Query query={props.ALL_BOOKS}>
+    <Query query={props.ALL_BOOKS} onError={props.handleError}>
       {(result) => {
         if (result.loading) {
           return <div>Loading..</div>
