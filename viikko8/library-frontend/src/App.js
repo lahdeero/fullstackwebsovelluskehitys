@@ -1,4 +1,3 @@
-import { gql } from 'apollo-boost'
 import React, { useState, useEffect } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
@@ -99,6 +98,7 @@ const App = () => {
 
       <Books
         show={page === 'books'} ALL_BOOKS={ALL_BOOKS}
+        handleError={(error) => handleError(error)}
       />
 
       <Recommend
